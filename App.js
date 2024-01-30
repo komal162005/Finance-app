@@ -3,6 +3,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createDrawerNavigator } from '@react-navigation/drawer';
 import Login from './screens/Login';
 import Icon from '@expo/vector-icons/Ionicons';
 import Home from './screens/Home';
@@ -13,14 +14,32 @@ import Expense from './screens/Expense';
 import Goal from './screens/Goal';
 import Budget from './screens/Budget';
 import Report from './screens/Report';
-import Setting from './screens/Setting';
-import Icons from '@expo/vector-icons/AntDesign';
 import Profile from './otherScreens/Profile'; 
+import FPass from './otherScreens/FPass';
+import FPassCom from './otherScreens/ResetPassCom';
+import { useRoute } from '@react-navigation/native';
+import Notification from './screens/Notification.android';
+import Icons from '@expo/vector-icons/FontAwesome5';
+import Tax from './screens/TaxR';
+import { useEffect, useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import ImportExport from './otherScreens/ImportExport'
 
 const stack=createNativeStackNavigator();
 const Tab=createBottomTabNavigator();
+const Drawer=createDrawerNavigator();
+
+function DrawerNav(){
+  return(
+    <Drawer.Navigator>
+      <Drawer.Screen name='Dash' component={Dashboard}/>
+      <Drawer.Screen name='Notification' component={Notification}/>
+    </Drawer.Navigator>
+  )
+}
 
 function HomeScreen() {
+  
   return (
           <Tab.Navigator initialRouteName='Dashboard' 
            screenOptions={({route})=>({
@@ -50,7 +69,7 @@ function HomeScreen() {
             tabBarIcon: ({focused}) => (
               <View>
                 <Icons
-                  name='piechart'
+                  name='chart-pie'
                   size={25}
                   color={focused ? '#8338ec' : '#9594e5'}
                 />
@@ -58,12 +77,12 @@ function HomeScreen() {
             ),
           }}
               />
-              <Tab.Screen name='setting' component={Setting} 
+              <Tab.Screen name='Notification' component={Notification} 
                 options={{
             tabBarIcon: ({focused}) => (
               <View>
                 <Icon
-                  name='settings'
+                  name='notifications'
                   size={25}
                   color={focused ? '#8338ec' : '#9594e5'}
                 />
@@ -71,12 +90,12 @@ function HomeScreen() {
             ),
           }}
               />
-              <Tab.Screen name='profile' component={Profile} 
+              <Tab.Screen name='profile' component={ImportExport} 
                 options={{
             tabBarIcon: ({focused}) => (
               <View>
                 <Icons
-                  name='user'
+                  name='file-alt'
                   size={25}
                   color={focused ? '#8338ec' : '#9594e5'}
                 />
@@ -89,7 +108,23 @@ function HomeScreen() {
       }
 
 function App() {
+  const [isLogged,setIsLogged]=useState(false)
+  const _retriveData=async()=>{
+    try{
+     const data=await AsyncStorage.getItem("keepLoggedIn");
+     setIsLogged(data)
+    }
+    catch(error){
+
+    }
+  }
+
+  useEffect(()=>{
+    _retriveData();
+  },[])
+
   return (
+    
 <NavigationContainer>
     <stack.Navigator initialRouteName='Home' screenOptions={{headerShown:false}}>
     <stack.Screen name='Home' component={Home} />
@@ -100,9 +135,13 @@ function App() {
       <stack.Screen name='Expense' component={Expense}/>
       <stack.Screen name='Goal' component={Goal}/>
       <stack.Screen name='Budget' component={Budget}/>
+      <stack.Screen name='forgotP' component={FPass}/>
+      <stack.Screen name='forgotPC' component={FPassCom}/>
+      <stack.Screen name='Tax' component={Tax}/>
+      <stack.Screen name='drawer' component={DrawerNav}/>
+      <stack.Screen name='Profile' component={Profile}/>
     </stack.Navigator>
     </NavigationContainer>
-   
   );
 }
 export default App;

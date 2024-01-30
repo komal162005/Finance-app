@@ -1,9 +1,22 @@
-import { Button, ImageBackground, SafeAreaView, StyleSheet, Text, TouchableOpacity, View ,Image, ScrollView} from 'react-native';
+import { Button, 
+  ImageBackground, 
+  SafeAreaView, 
+  StyleSheet, 
+  Text, 
+  TouchableOpacity, 
+  View ,
+  Image, 
+  ScrollView,
+  Animated,
+  Dimensions,
+  ToastAndroid
+} from 'react-native';
 import React, { useState,useContext } from 'react'
 import { TextInput } from 'react-native';
 import Icon from '@expo/vector-icons/FontAwesome';
 import Icons from '@expo/vector-icons/AntDesign';
-import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 function Login({navigation}){
   const [fdata,setFdata]=useState({
@@ -11,6 +24,9 @@ function Login({navigation}){
     password:'',
   });
   const [errorMsg,setErrorMsg]=useState(null);
+  const fPass=()=>{
+    navigation.navigate('forgotP');
+  }
   const submit=()=>{
     if(fdata.email===''||fdata.password===''){
       setErrorMsg('*Please fill all fields!');
@@ -25,7 +41,7 @@ return;
       return;
           }
           else{
-            fetch('http://192.168.0.105:8000/signin', {
+            fetch('http://192.168.0.103:8000/signin', {
                   method: 'POST',
                   headers: {
                     'Content-Type': 'application/json',
@@ -38,14 +54,13 @@ return;
                   setErrorMsg(data.error);
                 }
                 else{
-                  alert("Log In Successfully");
-                  navigation.navigate("Dash");
-                }
+                  AsyncStorage.setItem("keepLoggedIn",JSON.stringify(true))
+                  ToastAndroid.show('Login successfully',ToastAndroid.LONG)
+                  navigation.navigate('Dash');
+                  }
                  })
               console.log(fdata);
           }
-      
-           
   }
   
   const [showPassword,setShowPassword]=useState('');
@@ -58,8 +73,9 @@ return;
     <Image  source={require('../compo/logo1.png')} style={{height:'40%',
     width:'70%',alignSelf:'center'}}/>
     <Text style={styles.header}>WELCOME</Text>
-    <Text style={styles.h2}>LOGIN HERE</Text>
-    {errorMsg ? <Text style={{alignSelf:'center',fontSize:20,fontWeight:'600',color:'red'}}>{errorMsg}</Text> : null}
+    <Text style={styles.h2}>Login Here</Text>
+    {errorMsg ? <View style={{flexDirection:'row',
+        marginBottom:5}}><Icon style={styles.err} name='warning' size={15}/><Text style={styles.err}>{errorMsg}</Text></View> : null}
     <View style={styles.f}>
       <Icons name='mail' size={20}/>
       <TextInput
@@ -78,10 +94,12 @@ return;
         placeholder='Password'
         placeholderTextColor={'black'}
         secureTextEntry={!showPassword}
+        onPressIn={() => setErrorMsg(null)}
         onChangeText={(text) => setFdata({ ...fdata, password: text })}
       />
       <TouchableOpacity onPress={togglePasswordVisibility}><Icon style={styles.Icon} size={20} name={showPassword ? 'eye-slash' : 'eye'} /></TouchableOpacity>
     </View>
+    <View ><TouchableOpacity onPress={fPass}><Text style={{alignSelf:'flex-end',color:'blue',textDecorationLine:'underline',paddingRight:25}}>Forgot Password</Text></TouchableOpacity></View>
     <TouchableOpacity style={styles.btn} onPress={submit}><Text style={{color:'white',fontWeight:'bold'}}>LOGIN</Text></TouchableOpacity>
     <View style={{marginLeft:10,alignSelf:'center',marginTop:15,flexDirection:'row',marginBottom:10}}>
         <Text>If new user click on </Text>
@@ -118,7 +136,8 @@ const styles = StyleSheet.create({
       borderColor:'#9d4edd',
       alignItems:'center',
       width:'80%',
-      alignSelf:'center'
+      alignSelf:'center',
+      elevation:20
     },
     container:{
         flex:1
@@ -138,20 +157,28 @@ const styles = StyleSheet.create({
         paddingLeft:140
     },
     header:{
-      marginTop:10,
+      marginTop:5,
       alignSelf:'center',
       fontSize: 30,
       fontWeight: 'bold',
       fontFamily: 'sans-serif-condensed',
     },
     txtin:{
-        marginLeft:10,
-    },
+      marginLeft:15
+    }
+    ,
     txt:{
         color: 'white',
     fontSize: 16,
     fontWeight: 'bold',
     alignSelf:'center'
+    },
+    err:{
+      color: 'red',
+    alignSelf: 'center',
+    marginTop: 10,
+    fontSize: 15,
+    padding: 10,
     }
     
 })

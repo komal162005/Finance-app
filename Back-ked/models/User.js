@@ -1,7 +1,11 @@
 const mongoose = require('mongoose');
-const bcrypt = require("bcrypt");
-
+const bcrypt=require('bcrypt');
 const UserS = new mongoose.Schema({
+    userId:{
+        require:true,
+        type:String,
+        unique:true
+    },
     fname:{
         type:String,
         required:true
@@ -18,6 +22,15 @@ const UserS = new mongoose.Schema({
     address:{
         type:String,
         required:true
+    },
+    resettoken:{
+        type:String,
+        
+    },
+    resettokenExpiration:
+    {
+        type:String,
+        
     }
 })
 UserS.pre('save', async function (next) {

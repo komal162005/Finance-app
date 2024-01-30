@@ -1,5 +1,9 @@
-import { Email } from '@mui/icons-material';
 import React, { useContext, useState } from 'react';
+import Icon from '@expo/vector-icons/AntDesign';
+import Icons from '@expo/vector-icons/FontAwesome';
+import Icon1 from '@expo/vector-icons/MaterialCommunityIcons';
+import 'react-native-get-random-values';
+import { v4 as uuidv4 } from 'uuid';
 import {
   Button,
   Text,
@@ -8,9 +12,12 @@ import {
   View,
   StyleSheet,
   ImageBackground,
+  ToastAndroid
 } from 'react-native'; 
 const Register = ({ navigation }) => {
+  const userId=uuidv4();
   const [fdata, setFdata] = useState({
+    userId:userId,
     fname: '',
     email: '',
     password: '',
@@ -18,7 +25,7 @@ const Register = ({ navigation }) => {
   });
 
   const [errorMsg, setErrorMsg] = useState(null);
-
+  
   const submit = () => {
     if (!fdata.fname || !fdata.email || !fdata.password ) {
       setErrorMsg('All fields are required!');
@@ -28,8 +35,16 @@ const Register = ({ navigation }) => {
         setErrorMsg('Password and Confirm must be the same!');
         return;
       } 
+      else if(fdata.password.length>8){
+        setErrorMsg('Password must be at least 8 characters!!');
+        return;
+      }
+      else if(!fdata.email.includes('@')){
+        setErrorMsg('Please enter valid email!');
+        return;
+      }
       else {
-        fetch('http://192.168.0.105:8000/signup', {
+        fetch('http://192.168.0.102:8000/signup', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -42,7 +57,7 @@ const Register = ({ navigation }) => {
           setErrorMsg(data.error);
         }
         else{
-          alert("Account created Successfully");
+          ToastAndroid.show('user registered successfully',ToastAndroid.LONG)
           navigation.navigate("Login");
         }
          })
@@ -56,43 +71,57 @@ const Register = ({ navigation }) => {
     <View style={styles.container}>
       <ImageBackground source={require('../compo/bg.jpg')} resizeMode='cover' style={styles.image}>
         <Text style={styles.title}>Sign Up</Text>
-        {errorMsg ? <Text style={styles.err}>{errorMsg}</Text> : null}
+        {errorMsg ? <View style={{flexDirection:'row',
+        marginBottom:10}}><Icon style={styles.err} name='warning' size={15}/><Text style={styles.err}>{errorMsg}</Text></View> : null}
         <View style={styles.wrapper}>
+        <View style={styles.input}>
+        <Icon name='user' size={17} color={'#9d4edd'} />
           <TextInput
-            style={styles.input}
+          style={styles.f}
             placeholder="Enter Name"
             onChangeText={(text) => setFdata({ ...fdata, fname: text })}
             onPressIn={() => setErrorMsg(null)}
           />
+        </View>
+        <View style={styles.input}>
+        <Icon name='mail' size={17} color={'#9d4edd'}/>
           <TextInput
-            style={styles.input}
+            style={styles.f}
             placeholder="Enter email"
             onChangeText={(text) => setFdata({ ...fdata, email: text })}
             onPressIn={() => setErrorMsg(null)}
           />
+          </View>
+          <View style={styles.input}>
+          <Icons name='lock' size={17} color={'#9d4edd'} />
           <TextInput
-            style={styles.input}
+            style={styles.f}
             placeholder="Enter password"
             secureTextEntry={true}
             onChangeText={(text) => setFdata({ ...fdata, password: text })}
             onPressIn={() => setErrorMsg(null)}
           />
-
+</View>
+<View style={styles.input}>
+<Icons name='lock' size={17} color={'#9d4edd'}/>
           <TextInput
-            style={styles.input}
+            style={styles.f}
             placeholder="Confirm password"
             secureTextEntry={true}
             onChangeText={(text) => setFdata({ ...fdata, ConfirmPassword: text })}
             onPressIn={() => setErrorMsg(null)}
-          />
+          /></View>
+          <View style={styles.input}>
+          <Icon1 name='map-marker-circle' size={17} color={'#9d4edd'}/>
           <TextInput
           multiline={true}
           numberOfLines={5}
-            style={styles.input}
+            style={styles.f}
             placeholder="Address"
             onChangeText={(text) => setFdata({ ...fdata, address: text })}
             onPressIn={() => setErrorMsg(null)}
           />
+          </View>
           <TouchableOpacity onPress={() => submit()} style={styles.btn}>
             <Text style={{color:'white',fontWeight:'bold'}}>REGISTER</Text>
           </TouchableOpacity>
@@ -117,6 +146,9 @@ const styles = StyleSheet.create({
     fontSize: 20,
     padding: 10,
   },
+  f:{
+    marginLeft:10
+  },
   container: {
     flex: 1,
     alignItems: 'center',
@@ -132,7 +164,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 30,
     fontWeight: 'bold',
-    paddingBottom: 40,
+    paddingBottom: 20,
     fontFamily: 'sans-serif-condensed',
   },
   wrapper: {
@@ -146,6 +178,8 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     paddingHorizontal: 10,
     borderColor: '#9d4edd',
+    flexDirection:'row',
+    alignItems:'center'
   },
   link: {
     color: 'blue',
