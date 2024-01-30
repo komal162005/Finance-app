@@ -12,24 +12,25 @@ export default function Dashboard({navigation}) {
         fontSize: 30,
         marginTop: 40,
         fontWeight: 'bold',
-        marginBottom: 30
+        marginBottom: 30,
+        fontFamily:'serif'
       }}>Welcome</Text>
       <View style={styles.IE}>
-        <TouchableOpacity style={styles.choose}>
+        <TouchableOpacity style={styles.choose} onPress={()=>navigation.navigate('Income')}>
         <Text style={styles.txt}>Income</Text>
           <ImageBackground source={require('../compo/income.png')} style={styles.image}/>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.choose}>
+        <TouchableOpacity style={styles.choose} onPress={()=>navigation.navigate('Expense')}>
         <Text style={styles.txt}>Expense</Text>
           <ImageBackground source={require('../compo/exp.png')} resizeMode='cover' style={styles.image}/> 
         </TouchableOpacity>
       </View>
       <View style={styles.IE}>
-        <TouchableOpacity style={styles.choose}>
+        <TouchableOpacity style={styles.choose} onPress={()=>navigation.navigate('Goal')}>
         <Text style={styles.txt}>Goal</Text>
           <ImageBackground source={require('../compo/target.png')} style={styles.image}/>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.choose}>
+        <TouchableOpacity style={styles.choose} onPress={()=>navigation.navigate('Budget')}>
           <Text style={styles.txt}>Budget</Text>
           <ImageBackground source={require('../compo/budget.png')} style={styles.image}/>
         </TouchableOpacity>
@@ -44,11 +45,11 @@ const styles = StyleSheet.create({
     flex:1,
     alignItems:'center',
     height:'100%',
-    backgroundColor:'#84a59d'
+    backgroundColor:'#9d4edd'
   },
   image:{
-    height:'70%',
-    width:'70%',
+    height:'80%',
+    width:'90%',
     justifyContent:'flex-start',
     borderRadius:20,
     alignSelf:'center'
@@ -65,16 +66,17 @@ const styles = StyleSheet.create({
   },
   choose:{
     height:'90%',
-    width:'45%',
+    width:'50%',
     alignItems:'center',
     alignSelf:'center',
+    justifyContent:'center',
     backgroundColor:'white',
     borderRadius:10
   },
   txt:{
     fontWeight:'700',
     alignSelf:'center',
-    marginBottom:5,
+    marginBottom:10,
     marginTop:5
   }
 })

@@ -4,11 +4,29 @@ import React from 'react'
 function Home({navigation}) {
   return (
     <View style={styles.con} >
-      <Text style={styles.title}>FinanceTracker</Text>
+    <Text style={{
+    fontSize:35,
+    fontWeight:'500',
+    alignSelf:'center',
+    fontFamily:'serif',
+    marginLeft:30,
+    marginRight:30,
+    marginBottom:5}}>
+        Easily manage your Finance 
+    </Text>
+    <Text
+    style={{
+    fontSize:15,
+    marginLeft:30,
+    marginRight:30,
+    fontWeight:'300',
+    alignSelf:'center',
+    fontFamily:'serif',
+    }}>Leading you to a better future</Text>
       <Image source={require('../compo/logo.png')} 
       style={styles.image}></Image>
       <TouchableOpacity onPress={()=>navigation.navigate("Login")} style={styles.btn}>
-     <Text style={styles.txt}>Start</Text>
+     <Text style={styles.txt}>Get Started</Text>
       </TouchableOpacity>
           </View>
   )
@@ -28,31 +46,35 @@ title:{
     shadowRadius:20    
 },
 image:{
-    height:"55%",
-    width:'55%'
+    height:"50%",
+    width:'50%',
+    borderRadius:30,
 },
 con:{
     alignItems:'center',
     justifyContent:'center',
-    height:'100%'
+    height:'100%',
+    backgroundColor:'white',
 },
 txt:{
     alignSelf:'center',
-    marginHorizontal:30,
+    marginHorizontal:20,
     fontSize:16,
     fontWeight:'800',
     marginVertical:6,
     color:'white'
 },
 btn:{
-    alignItems:"center",
-    marginHorizontal:25,
-    marginTop:15,
-    paddingHorizontal:10,
-    borderRadius:23,
-    borderRadius:10,
-    backgroundColor:'#bc4749',
-    color:'white',
-    alignSelf:'center'
+    marginHorizontal:18,
+      borderWidth:1,
+      marginTop:20,
+      paddingHorizontal:10,
+      backgroundColor:'#bc4749',
+      borderRadius:10,
+      paddingVertical:2,
+      borderColor:'#bc4749',
+      alignItems:'center',
+      width:'90%',
+      alignSelf:'center'
 }
 })

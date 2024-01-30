@@ -8,7 +8,7 @@ const bcrypt=require('bcrypt');
 require('dotenv').config();
 router.use(bodyParser.json())
 router.post('/signup',(req,res)=>{
-        const {fname,email,password,ConfirmPassword}=req.body;
+        const {fname,email,password,address}=req.body;
         console.log(req.body);
         
         User.findOne({email:email})
@@ -20,7 +20,7 @@ router.post('/signup',(req,res)=>{
                 fname,
                 email,
                 password,
-                ConfirmPassword
+                address
             })
             try{
                 await user.save();

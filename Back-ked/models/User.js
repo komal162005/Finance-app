@@ -15,7 +15,7 @@ const UserS = new mongoose.Schema({
         type:String,
         required:true,
     },
-    ConfirmPassword:{
+    address:{
         type:String,
         required:true
     }

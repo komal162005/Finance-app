@@ -1,3 +1,4 @@
+import { Email } from '@mui/icons-material';
 import React, { useContext, useState } from 'react';
 import {
   Button,
@@ -7,54 +8,55 @@ import {
   View,
   StyleSheet,
   ImageBackground,
-} from 'react-native';
-
+} from 'react-native'; 
 const Register = ({ navigation }) => {
   const [fdata, setFdata] = useState({
     fname: '',
     email: '',
     password: '',
-    ConfirmPassword: '',
+    address:'',
   });
 
   const [errorMsg, setErrorMsg] = useState(null);
 
   const submit = () => {
-    if (!fdata.fname || !fdata.email || !fdata.password || !fdata.ConfirmPassword) {
+    if (!fdata.fname || !fdata.email || !fdata.password ) {
       setErrorMsg('All fields are required!');
       return;
     } else {
       if (fdata.password !== fdata.ConfirmPassword) {
         setErrorMsg('Password and Confirm must be the same!');
         return;
-      } else {
-          fetch('http://192.168.0.105:8000/signup', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(fdata),
-          })
-          .then(res=>res.json()).then(
-            data=>{
-              if(data.error){
-            setErrorMsg(data.error);
-          }
-          else{
-            alert("Account created Successfully");
-            navigation.navigate("Login");
-          }
-           })
-        console.log(fdata);
-      }
+      } 
+      else {
+        fetch('http://192.168.0.105:8000/signup', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(fdata),
+        })
+        .then(res=>res.json()).then(
+          data=>{
+            if(data.error){
+          setErrorMsg(data.error);
+        }
+        else{
+          alert("Account created Successfully");
+          navigation.navigate("Login");
+        }
+         })
+      console.log(fdata);
+    }
+      
     }
   };
 
   return (
     <View style={styles.container}>
-      <ImageBackground source={require('../compo/BG.png')} resizeMode='cover' style={styles.image}>
+      <ImageBackground source={require('../compo/bg.jpg')} resizeMode='cover' style={styles.image}>
         <Text style={styles.title}>Sign Up</Text>
-
+        {errorMsg ? <Text style={styles.err}>{errorMsg}</Text> : null}
         <View style={styles.wrapper}>
           <TextInput
             style={styles.input}
@@ -83,9 +85,16 @@ const Register = ({ navigation }) => {
             onChangeText={(text) => setFdata({ ...fdata, ConfirmPassword: text })}
             onPressIn={() => setErrorMsg(null)}
           />
-
+          <TextInput
+          multiline={true}
+          numberOfLines={5}
+            style={styles.input}
+            placeholder="Address"
+            onChangeText={(text) => setFdata({ ...fdata, address: text })}
+            onPressIn={() => setErrorMsg(null)}
+          />
           <TouchableOpacity onPress={() => submit()} style={styles.btn}>
-            <Text>REGISTER</Text>
+            <Text style={{color:'white',fontWeight:'bold'}}>REGISTER</Text>
           </TouchableOpacity>
 
           <View style={{ flexDirection: 'row', marginTop: 20 }}>
@@ -94,7 +103,6 @@ const Register = ({ navigation }) => {
               <Text style={styles.link}>Login</Text>
             </TouchableOpacity>
           </View>
-          {errorMsg ? <Text style={styles.err}>{errorMsg}</Text> : null}
         </View>
       </ImageBackground>
     </View>
@@ -132,12 +140,12 @@ const styles = StyleSheet.create({
   },
   input: {
     padding: 5,
-    marginBottom: 12,
+    marginBottom: 10,
     borderWidth: 1,
     borderColor: 'black',
     borderRadius: 10,
     paddingHorizontal: 10,
-    borderColor: '#e63946',
+    borderColor: '#9d4edd',
   },
   link: {
     color: 'blue',
@@ -147,10 +155,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     marginTop: 30,
     paddingHorizontal: 10,
-    backgroundColor: '#e63946',
+    backgroundColor: '#9d4edd',
     borderRadius: 10,
     paddingVertical: 6,
-    borderColor: '#e63946',
+    borderColor: '#9d4edd',
     alignItems: 'center',
     width: '100%',
     alignSelf: 'center',

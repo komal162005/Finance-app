@@ -96,6 +96,10 @@ function App() {
       <stack.Screen name='Login'  component={Login}/>
       <stack.Screen name='Register'  component={Register}/>
       <stack.Screen name='Dash' component={HomeScreen}/>
+      <stack.Screen name='Income' component={Income}/>
+      <stack.Screen name='Expense' component={Expense}/>
+      <stack.Screen name='Goal' component={Goal}/>
+      <stack.Screen name='Budget' component={Budget}/>
     </stack.Navigator>
     </NavigationContainer>
    
