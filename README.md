@@ -35,5 +35,4 @@ Feel free to customize and extend the app as needed for your project! If you enc
 
 1. **Login:**
    <br/>
-   <img src="screenshots/img1.png" alt="Caption 1" height="200">
-
+   
