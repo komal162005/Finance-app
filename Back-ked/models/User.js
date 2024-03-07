@@ -23,15 +23,23 @@ const UserS = new mongoose.Schema({
         type:String,
         required:true
     },
+    mobileNo:{
+        type:String,
+        required:true
+    },
     resettoken:{
         type:String,
-        
     },
     resettokenExpiration:
     {
         type:String,
-        
-    }
+    },
+    profileImage:{
+        type:Buffer
+    },
+    contentType:{
+         type:String
+    },
 })
 UserS.pre('save', async function (next) {
     const user = this;

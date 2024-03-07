@@ -1,180 +1,215 @@
-import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View,Button,Image } from 'react-native'
-import {Avatar,Title,Caption,TouchableRipple} from 'react-native-paper';
-import Icon from '@expo/vector-icons/MaterialCommunityIcons';
-import { useState,useEffect } from 'react';
-import axios from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-// import ImagePicker from 'react-native-image-picker';
+import {
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  Button,
+  Image,
+} from "react-native";
+import { Avatar, Title, Caption, TouchableRipple } from "react-native-paper";
+import Icon from "@expo/vector-icons/MaterialCommunityIcons";
+import * as SecureStore from "expo-secure-store";
+import { useState, useEffect, useContext } from "react";
+import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as ImagePicker from "expo-image-picker";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import { MyContext } from "../screens/Login";
 
-export default function Profile({navigation}) {
+export default function Profile({ navigation }) {
   // const [imageUri, setImageUri] = useState(null);
+  const [users, setData] = useState([]);
+  const [incomeEntries, setIncomeEntries] = useState([]);
+  const [expenseCount, setExpenseCount] = useState(0);
+  const [image, setImage] = useState(null);
 
-  const [users,setData]=useState([]);
-  useEffect(()=>{
-    axios.get('http://192.168.0.103:8000/user')
-    .then(users=>setData(users.data))
-    .catch(err=>console.err(err))
-  },[]);
+  useEffect(() => {
+    (async () => {
+      const { status } =
+        await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (status !== "granted") {
+        console.error("Permission to access camera roll denied");
+      }
 
-  // const openImagePicker = () => {
-  //   const options = {
-  //     title: 'Select Avatar',
-  //     storageOptions: {
-  //       skipBackup: true,
-  //       path: 'images',
-  //     },
-  //   };
+      // Retrieve the stored profile picture URI from AsyncStorage
+      try {
+        const storedImage = await AsyncStorage.getItem("profilePicture");
+        if (storedImage) {
+          setImage(storedImage);
+        }
+      } catch (error) {
+        console.error("Error retrieving profile picture:", error.message);
+      }
+    })();
+  }, []);
 
-  //   ImagePicker.showImagePicker(options, (response) => {
-  //     if (response.didCancel) {
-  //       console.log('User cancelled image picker');
-  //     } else if (response.error) {
-  //       console.log('ImagePicker Error:', response.error);
-  //     } else {
-  //       const uri = response.uri;
-  //       setImageUri(uri);
-  //     }
-  //   });
-  // };
+  useEffect(() => {
+    fetchData();
+    fetchUser();
+  }, []);
 
-  // const uploadImage = async () => {
-  //   try {
-  //     if (!imageUri) {
-  //       console.log('Please select an image first');
-  //       return;
-  //     }
+  const fetchData = async () => {
+    const userId = await SecureStore.getItemAsync("userId");
 
-  //     // Upload the image to your server and get the image URL
-  //     const formData = new FormData();
-  //     formData.append('profileImage', {
-  //       uri: imageUri,
-  //       type: 'image/jpeg',
-  //       name: 'profile.jpg',
-  //     });
+    const response = await axios.get(`/income/${userId}`);
+    setIncomeEntries(response.data);
+    const TotalExpensesCount = response.data.length;
+    setExpenseCount(TotalExpensesCount);
+  };
+  const fetchUser = async () => {
+    const userId = await SecureStore.getItemAsync("userId");
+    axios
+      .get(`/user/${userId}`)
+      .then((users) => setData(users.data))
+      .catch((err) => console.err(err));
+  };
+  const calculateTotal = (data, type) => {
+    return data.reduce((total, item) => total + item.amount, 0);
+  };
+  const totalIncome = calculateTotal(incomeEntries, "income");
 
-  //     const response = await axios.post('http://192.168.0.102:8000/upload', formData);
+  const submit = () => {
+    AsyncStorage.setItem("keepLoggedIn", "");
+    navigation.navigate("Login");
+  };
 
-  //     // Assuming your server responds with the image URL
-  //     const imageUrl = response.data.imageUrl;
-  //     console.log('Image URL:', imageUrl);
-
-  //     // Now you can save the imageUrl in MongoDB or use it as needed
-  //   } catch (error) {
-  //     console.error('Error uploading image:', error);
-  //   }
-  // };
-
-  const submit=()=>{
-    AsyncStorage.setItem('keepLoggedIn','');
-    navigation.navigate('Login');
-  }
-
-return (
+  return (
     <SafeAreaView style={styles.container}>
       <View style={styles.userInfo}>
-      <View style={{width:'100%',alignItems:'center', marginTop: 50,borderBottomColor:'black',borderBottomWidth:1,marginBottom:30,}}>
-        <Avatar.Image 
-        source={{
-          uri:'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png',
-        }}
-        size={120}
-        />
-        {/* <View>
-        {imageUri && <Image source={{ uri: imageUri }} style={styles.image} />}
-      <Button title="Select Image" onPress={openImagePicker} />
-      <Button title="Upload Image" onPress={uploadImage} />
-        </View> */}
-        <Title style={[styles.title, {
-              marginTop:15,
-              marginBottom: 5,
-              fontFamily:'serif',
-              fontSize:20
-            }]}>{users.map(item => (
-          <View key={item._id} style={styles.item}>
-            <Text style={{color:"white",alignSelf:'center',fontFamily:'serif',
-              fontSize:15}}>{item.fname}</Text>
+        <View
+          style={{
+            alignItems: "flex-start",
+            marginTop: 10,
+            flexDirection: "row",
+          }}
+        >
+          <TouchableOpacity>
+            <Image source={{ uri: image }} style={styles.imagep} />
+          </TouchableOpacity>
+          <View style={{ marginLeft: 40 }}>
+            <Title
+              style={[
+                styles.title,
+                {
+                  marginTop: 30,
+                  marginBottom: 5,
+                },
+              ]}
+            >
+              {users.map((item) => (
+                <View key={item._id} style={styles.item}>
+                  <Text style={{ fontSize: 20 }}>{item.fname}</Text>
+                </View>
+              ))}
+            </Title>
           </View>
-        ))}</Title>
-      </View>
+        </View>
       </View>
       <View style={styles.userInfo}>
         <View style={styles.row}>
-          <Icon name="map-marker-radius" color="white" size={20}/>
-          {users.map(item => (
-          <View key={item._id} style={styles.item}>
-            <Text style={{color:"white", marginLeft: 20}}>{item.address}</Text>
-          </View>
-        ))}
+          <Icon name="map-marker-radius" color="black" size={20} />
+          {users.map((item) => (
+            <View key={item._id} style={styles.item}>
+              <Text style={{ color: "black", marginLeft: 20 }}>
+                {item.address}
+              </Text>
+            </View>
+          ))}
         </View>
         <View style={styles.row}>
-          <Icon name="phone" color="white" size={20}/>
-          <Text style={{color:"white", marginLeft: 20}}>+91-900000009</Text>
-        </View>
-        <View style={styles.row}>
-          <Icon name="email" color="white" size={20}/>
-          {users.map(item => (
-          <View key={item._id} style={styles.item}>
-            <Text style={{color:"white", marginLeft: 20}}>{item.email}</Text>
-          </View>
-        ))}
+          <Icon name="email" color="black" size={20} />
+          {users.map((item) => (
+            <View key={item._id} style={styles.item}>
+              <Text style={{ color: "black", marginLeft: 20 }}>
+                {item.email}
+              </Text>
+            </View>
+          ))}
         </View>
       </View>
       <View style={styles.infoBoxWrapper}>
-          <View style={[styles.infoBox, {
-            borderRightColor: '#dddddd',
-            borderRightWidth: 1
-          }]}>
-            <Title>₹140.50</Title>
-            <Caption>Saving</Caption>
-          </View>
-          <View style={styles.infoBox}>
-            <Title>12</Title>
-            <Caption>Total Expense</Caption>
-          </View>
+        <View
+          style={[
+            styles.infoBox,
+            {
+              borderRightColor: "#dddddd",
+              borderRightWidth: 1,
+            },
+          ]}
+        >
+          <Title>₹{totalIncome}</Title>
+          <Caption>Saving</Caption>
+        </View>
+        <View style={styles.infoBox}>
+          <Title>{expenseCount}</Title>
+          <Caption>Total Expense</Caption>
+        </View>
       </View>
-      <TouchableOpacity style={styles.btn} onPress={submit}><Text style={{color:'white',alignSelf:'center',fontWeight:'bold'}}>LOG-OUT</Text></TouchableOpacity>
+      <TouchableOpacity style={styles.btn} onPress={submit}>
+        <Text
+          style={{ color: "white", alignSelf: "center", fontWeight: "bold" }}
+        >
+          LOG-OUT
+        </Text>
+      </TouchableOpacity>
     </SafeAreaView>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
-  container:{
-    flex:1,
-    backgroundColor:'#9d4edd'
+  container: {
+    flex: 1,
+    backgroundColor: "white",
   },
-  userInfo:{
+  userInfo: {
     paddingHorizontal: 30,
-    marginBottom:30
+    marginBottom: 30,
+    marginTop: 10,
   },
-  row:{
-    flexDirection: 'row',
+  row: {
+    flexDirection: "row",
     marginBottom: 10,
   },
   infoBoxWrapper: {
-    borderBottomColor: '#dddddd',
+    borderBottomColor: "#dddddd",
     borderBottomWidth: 1,
-    borderTopColor: '#dddddd',
+    borderTopColor: "#dddddd",
     borderTopWidth: 1,
-    flexDirection: 'row',
+    flexDirection: "row",
     height: 100,
   },
   infoBox: {
-    width: '50%',
-    alignItems: 'center',
-    justifyContent: 'center',
+    width: "50%",
+    alignItems: "center",
+    justifyContent: "center",
   },
-  btn:{
-    backgroundColor:'#06d6a0',
-  alignSelf:'center',
-  marginHorizontal:25,
-  marginTop:80,
-  paddingHorizontal:10,
-  paddingVertical:6,
-  marginBottom:10,
-  borderRadius:10,
-  width:'50%',
-  borderColor:'#06d6a0',
-  justifyContent:'center'
-  }
-  
-})
+  btn: {
+    backgroundColor: "#06d6a0",
+    alignSelf: "center",
+    marginHorizontal: 25,
+    marginTop: 20,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    marginBottom: 10,
+    borderRadius: 10,
+    width: "50%",
+    borderColor: "#06d6a0",
+    justifyContent: "center",
+  },
+  imagep: {
+    borderRadius: 75,
+    width: 100,
+    height: 100,
+    borderColor: "pink",
+    borderWidth: 0,
+  },
+  editBtn: {
+    backgroundColor: "white",
+    borderRadius: 24,
+    padding: 8,
+    position: "absolute",
+    right: 5,
+    bottom: 5,
+  },
+});

@@ -17,7 +17,7 @@
         {
           "iCloudContainerEnvironment": "Production"
         }
-      ]
+        ]
     ],
     "assetBundlePatterns": [
       "**/*"

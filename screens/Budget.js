@@ -1,23 +1,30 @@
-import { SafeAreaView, 
-  StyleSheet, 
-  Text, 
-  TouchableOpacity, 
+import {
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
   View,
   TextInput,
-  ScrollView, 
-  FlatList
-} from 'react-native'
-import React, { useState,useEffect } from 'react';
-import styles from '../Styles.style';
-import Icon from '@expo/vector-icons/MaterialCommunityIcons'
-import axios from 'axios';
-import { ListItem } from '@rneui/themed';
+  ScrollView,
+  FlatList,
+  RefreshControl,
+  ActivityIndicator,
+  ToastAndroid,
+} from "react-native";
+import * as SecureStore from "expo-secure-store";
+import React, { useState, useEffect } from "react";
+import styles from "../Styles.style";
+import Icon from "@expo/vector-icons/MaterialCommunityIcons";
+import axios from "axios";
+import { ListItem } from "@rneui/themed";
+import { Ionicons } from "@expo/vector-icons";
 
-
-function Budget ()  {
-  const [errorMsg,setErrorMsg]=useState('');
-  const [newBudget,setNewBudget]=useState([]);
-  const [budgetEntries,setBudgetEntries]=useState([]);
+function Budget({ navigation }) {
+  const [amount, setAmount] = useState(null);
+  const [type, setType] = useState(null);
+  const [refreshing, setRefershing] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
+  const [budgetEntries, setBudgetEntries] = useState([]);
 
   useEffect(() => {
     // Fetch all income entries when the component mounts
@@ -26,92 +33,141 @@ function Budget ()  {
 
   const fetchBudget = async () => {
     try {
-      const response = await axios.get('http://192.168.0.102:8000/budget');
+      const userId = await SecureStore.getItemAsync("userId");
+      const response = await axios.get(`/budget/${userId}`);
       setBudgetEntries(response.data);
+      setRefershing(false);
     } catch (error) {
-      console.error('Error fetching income data:', error.message);
+      console.error("Error fetching budget data:", error.message);
     }
-  }
+  };
 
-  const submit=()=>{  
-    if(!newBudget.amount||!newBudget.type){
-      setErrorMsg('Please fill all fields!')
+  const onRefresh = () => {
+    setBudgetEntries([]);
+    fetchBudget();
+  };
+
+  const submit = async () => {
+    const userId = await SecureStore.getItemAsync("userId");
+    console.log(userId);
+
+    const Data = {
+      userId,
+      amount: amount,
+      type: type,
+    };
+
+    if (!amount || !type) {
+      setErrorMsg("Please fill all fields!");
+    } else {
+      fetch("/budget", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          fetchBudget,
+        },
+        body: JSON.stringify(Data),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.error) {
+            setErrorMsg(data.error);
+          } else {
+            ToastAndroid.show("Budget Crated Successfully", ToastAndroid.LONG);
+          }
+        });
     }
-    else{
-      fetch('http://192.168.0.101:8000/budget', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            fetchBudget
-          },
-          body: JSON.stringify(newBudget),
-          })
-        .then(res=>res.json()).then(
-          data=>{
-            if(data.error){
-          setErrorMsg(data.error);
-        }
-        else{
-          alert("Budget Crated Successfully");
-        }
-         })
-    }
-  }
+  };
   return (
     <SafeAreaView style={styles.con}>
       <View style={styles.header}>
-      <Text style={styles.headertxt}>Budget Creation</Text>
+        <TouchableOpacity onPress={() => navigation.navigate("Dashboard")}>
+          <Ionicons
+            style={{ marginHorizontal: 20, marginTop: 15 }}
+            name="chevron-back"
+            size={24}
+            color="white"
+          />
+        </TouchableOpacity>
+        <Text style={styles.headertxt}>Budget Creation</Text>
       </View>
+      {refreshing ? <ActivityIndicator /> : null}
       <View>
-      {
-        errorMsg ? <View style={{flexDirection:'row',
-        marginTop:20}}><Icon style={styles.err} name='alert' size={15}/><Text style={styles.err}>{errorMsg}</Text></View>:null
-      }
-      <Text style={styles.txt}>Crate your Budget:</Text>
-      <View style={styles.input}>
-      <TextInput style={{marginLeft:10}}
-      placeholder='enter budget amount...'
-      placeholderTextColor={'white'} 
-      keyboardType='number-pad'
-      onChangeText={(number) => setNewBudget({ ...newBudget, amount:number })}
-onPressIn={()=>setErrorMsg(null)}
-      />
+        {errorMsg ? (
+          <View style={{ flexDirection: "row", marginTop: 20 }}>
+            <Icon style={styles.err} name="alert" size={15} />
+            <Text style={styles.err}>{errorMsg}</Text>
+          </View>
+        ) : null}
+        <Text style={styles.txt}>Crate your Budget:</Text>
+        <View style={styles.input}>
+          <TextInput
+            style={{ marginLeft: 10 }}
+            placeholder="enter budget amount..."
+            placeholderTextColor={"grey"}
+            keyboardType="number-pad"
+            value={amount}
+            onChangeText={(Number) => setAmount(Number)}
+            onPressIn={() => setErrorMsg(null)}
+          />
+        </View>
+        <View style={styles.input}>
+          <TextInput
+            style={{ marginLeft: 10 }}
+            placeholder="Budget type..."
+            placeholderTextColor={"grey"}
+            value={type}
+            onChangeText={(text) => setType(text)}
+            onPressIn={() => setErrorMsg(null)}
+          />
+        </View>
+        <TouchableOpacity style={styles.btn} onPress={submit}>
+          <Text
+            style={{
+              color: "white",
+              alignSelf: "center",
+              fontWeight: "bold",
+              fontSize: 15,
+            }}
+          >
+            Set Budget
+          </Text>
+        </TouchableOpacity>
       </View>
-      <View style={styles.input}>
-        <TextInput style={{marginLeft:10}}
-        placeholder='Budget type...'
-        placeholderTextColor={'white'} 
-        onChangeText={(text) => setNewBudget({ ...newBudget, type: text })}
-        onPressIn={()=>setErrorMsg(null)}
-        />
-      </View>
-      <TouchableOpacity style={styles.btn} onPress={submit}><Text style={{color:'white',alignSelf:'center',
-      fontWeight:'bold',fontSize:15}}>Set Budget</Text></TouchableOpacity>
-      </View>  
-      <View style={{marginTop:20}}>
-      <Text style={{fontSize:20,
-      marginLeft:25,
-      fontWeight:'bold',
-      color:'white',
-      marginBottom:10,
-      fontFamily:'serif'}}>Created Budget</Text>
-        <FlatList 
-        pagingEnabled
+      <View style={{ marginTop: 20 }}>
+        <Text
+          style={{
+            fontSize: 20,
+            marginLeft: 25,
+            fontWeight: "bold",
+            color: "black",
+            marginBottom: 10,
+            fontFamily: "serif",
+          }}
+        >
+          Created Budget
+        </Text>
+        <FlatList
+          pagingEnabled
           data={budgetEntries}
           keyExtractor={(item) => item._id}
           renderItem={({ item }) => (
             <ListItem bottomDivider style={styles.list}>
-              <ListItem.Content >
-                <ListItem.Title>{new Date(item.date).toLocaleDateString()+` - ${item.amount} - ${item.type}  `}</ListItem.Title>
+              <ListItem.Content>
+                <ListItem.Title>
+                  {new Date(item.date).toLocaleDateString() +
+                    ` - ${item.amount} - ${item.type}  `}
+                </ListItem.Title>
               </ListItem.Content>
             </ListItem>
           )}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
         />
       </View>
     </SafeAreaView>
-    
-  )
+  );
 }
 
-export default Budget
-
+export default Budget;
