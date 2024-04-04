@@ -1,39 +1,39 @@
+// all the user interface elements.
 import {
-  Button,
   ImageBackground,
-  SafeAreaView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
   Image,
   ScrollView,
-  Animated,
-  Dimensions,
   ToastAndroid,
 } from "react-native";
-import React, { useState, useContext, createContext } from "react";
+// all the libraries to run the frontend.
+import React, { useState, createContext } from "react";
 import { TextInput } from "react-native";
 import Icon from "@expo/vector-icons/FontAwesome5";
 import Warn from "@expo/vector-icons/Ionicons";
 import Icons from "@expo/vector-icons/MaterialCommunityIcons";
 import axios from "axios";
 import * as SecureStore from "expo-secure-store";
-export const MyContext = createContext();
 
 function Login({ navigation }) {
+  // all variables used in this screen.
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
+
   const fPass = () => {
     navigation.navigate("forgotP");
   };
+  // function that run when button clicked.
   const submit = async () => {
     const Data = {
       email: email,
       password: password,
     };
-
+    // component validation.
     if (email === "" || password === "") {
       setErrorMsg("*Please fill all fields!");
       return;
@@ -45,6 +45,7 @@ function Login({ navigation }) {
       return;
     } else {
       try {
+        // function connect to backend with api.
         const url = process.env.localhost_url;
         const response = await axios.post(`/signin`, Data, {
           method: "POST",
@@ -53,19 +54,16 @@ function Login({ navigation }) {
           },
           body: JSON.stringify(Data),
         });
-        // const { token } = await response.data;
+
         const { userId } = await response.data;
         ToastAndroid.show("Login successfully..", ToastAndroid.LONG);
         navigation.navigate("Dash");
-        // await SecureStore.setItemAsync("token", token);
         await SecureStore.setItemAsync("userId", userId);
-        await SecureStore.setItemAsync("url", "http://192.168.0.103:8000");
+        await SecureStore.setItemAsync("URL", "http://192.168.0.102:8000");
         console.log(Data);
-        // console.log(token);
         console.log(JSON.stringify(userId));
       } catch (error) {
         setErrorMsg("error occured Please check email and password!");
-        console.error(error);
       }
     }
   };
@@ -75,6 +73,7 @@ function Login({ navigation }) {
     setShowPassword(!showPassword);
   };
   return (
+    // Front design code.
     <View style={styles.container}>
       <ImageBackground
         source={require("../compo/lbg.jpg")}

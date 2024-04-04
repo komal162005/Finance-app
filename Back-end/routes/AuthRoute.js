@@ -154,11 +154,11 @@ router.post("/signin", async (req, res) => {
 });
 
 router.post("/update", async (req, res) => {
-  const { fname, email, address, mobileNo } = req.body;
+  const { userId, fname, email, address, mobileNo } = req.body;
   console.log(req.body);
   try {
     const updateUser = await User.findOneAndUpdate(
-      { email: email },
+      { userId: userId },
       { fname, address, mobileNo },
       { new: true }
     );

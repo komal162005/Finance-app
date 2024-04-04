@@ -32,7 +32,7 @@ export default function ImportExport({ navigation }) {
   const [value, setValue] = useState(null);
   const exportDataToCsv = async () => {
     const userId = await SecureStore.getItemAsync("userId");
-    const url = await SecureStore.getItemAsync("url");
+    const url = await SecureStore.getItemAsync("URL");
     console.log(url);
     if (value == "1") {
       const localhost = url + `/income/${userId}`;

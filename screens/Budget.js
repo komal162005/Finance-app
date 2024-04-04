@@ -1,16 +1,16 @@
+// All the user interface elements
 import {
   SafeAreaView,
-  StyleSheet,
   Text,
   TouchableOpacity,
   View,
   TextInput,
-  ScrollView,
   FlatList,
   RefreshControl,
   ActivityIndicator,
   ToastAndroid,
 } from "react-native";
+// All libraries needed
 import * as SecureStore from "expo-secure-store";
 import React, { useState, useEffect } from "react";
 import styles from "../Styles.style";
@@ -18,8 +18,10 @@ import Icon from "@expo/vector-icons/MaterialCommunityIcons";
 import axios from "axios";
 import { ListItem } from "@rneui/themed";
 import { Ionicons } from "@expo/vector-icons";
+import { FontAwesome } from "@expo/vector-icons";
 
 function Budget({ navigation }) {
+  // all the array of variables.
   const [amount, setAmount] = useState(null);
   const [type, setType] = useState(null);
   const [refreshing, setRefershing] = useState(false);
@@ -31,6 +33,7 @@ function Budget({ navigation }) {
     fetchBudget();
   }, []);
 
+  // function that interact with backend with api.
   const fetchBudget = async () => {
     try {
       const userId = await SecureStore.getItemAsync("userId");
@@ -101,6 +104,12 @@ function Budget({ navigation }) {
         ) : null}
         <Text style={styles.txt}>Crate your Budget:</Text>
         <View style={styles.input}>
+          <FontAwesome
+            name="rupee"
+            size={18}
+            color="black"
+            style={{ marginLeft: 10, marginTop: 5 }}
+          />
           <TextInput
             style={{ marginLeft: 10 }}
             placeholder="enter budget amount..."
@@ -112,6 +121,12 @@ function Budget({ navigation }) {
           />
         </View>
         <View style={styles.input}>
+          <Icon
+            name="format-list-bulleted-type"
+            size={20}
+            color="black"
+            style={{ marginTop: 4, marginLeft: 5 }}
+          />
           <TextInput
             style={{ marginLeft: 10 }}
             placeholder="Budget type..."

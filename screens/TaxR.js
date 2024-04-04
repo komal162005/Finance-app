@@ -16,6 +16,7 @@ import Icon from "@expo/vector-icons/MaterialCommunityIcons";
 import axios from "axios";
 import { ListItem } from "@rneui/themed";
 import { Ionicons } from "@expo/vector-icons";
+import { FontAwesome } from "@expo/vector-icons";
 
 export default function TaxR({ navigation }) {
   const [amount, setAmount] = useState(null);
@@ -111,6 +112,12 @@ export default function TaxR({ navigation }) {
         </Text>
       </View>
       <View style={styles.input}>
+        <FontAwesome
+          name="rupee"
+          size={18}
+          color="black"
+          style={{ marginLeft: 10, marginTop: 5, marginRight: 5 }}
+        />
         <TextInput
           placeholder="enter amount..."
           keyboardType="number-pad"
@@ -120,6 +127,12 @@ export default function TaxR({ navigation }) {
         />
       </View>
       <View style={styles.input}>
+        <Icon
+          name="format-list-bulleted-type"
+          size={20}
+          color="black"
+          style={{ marginTop: 4, marginLeft: 5 }}
+        />
         <TextInput
           style={{ marginLeft: 10 }}
           placeholder="Type..."

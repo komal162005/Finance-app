@@ -6,17 +6,33 @@ import {
   Image,
   ImageBackground,
 } from "react-native";
-import React, { useContext } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import Icon from "@expo/vector-icons/FontAwesome5";
-import { MyContext } from "./Login";
+import axios from "axios";
+import { Title } from "react-native-paper";
+import * as SecureStore from "expo-secure-store";
+import { ScrollView } from "react-native";
 
 export default function Dashboard({ navigation }) {
+  const [users, setData] = useState([]);
+
+  useEffect(() => {
+    fetchUser();
+  }, []);
+
+  const fetchUser = async () => {
+    const userId = await SecureStore.getItemAsync("userId");
+    axios
+      .get(`/user/${userId}`)
+      .then((users) => setData(users.data))
+      .catch((err) => console.err(err));
+  };
   return (
     <View style={styles.container}>
       <ImageBackground
         source={require("../compo/dBG.jpg")}
         resizeMode="cover"
-        style={{ width: "100%", height: 120 }}
+        style={{ width: "100%", height: 180 }}
       >
         <View style={{ flexDirection: "row" }}>
           <Text style={styles.headerTxt}>WELCOME</Text>
@@ -27,17 +43,49 @@ export default function Dashboard({ navigation }) {
             onPress={() => navigation.navigate("Profile")}
           />
         </View>
+        <View style={{ marginTop: 5 }}>
+          <Title>
+            {users.map((item) => (
+              <View key={item._id} style={styles.item}>
+                <Text
+                  style={{
+                    fontSize: 25,
+                    fontWeight: "bold",
+                    fontFamily: "serif",
+                    elevation: 20,
+                    color: "white",
+                    marginHorizontal: 15,
+                  }}
+                >
+                  {item.fname} !
+                </Text>
+              </View>
+            ))}
+          </Title>
+        </View>
       </ImageBackground>
       <View
         style={{
+          paddingTop: 20,
           backgroundColor: "white",
           width: "100%",
           height: "100%",
-          alignItems: "center",
+          alignItems: "flex-start",
           borderRadius: 30,
           elevation: 20,
         }}
       >
+        <Text
+          style={{
+            alignSelf: "flex-start",
+            marginHorizontal: 40,
+            fontSize: 25,
+            marginTop: 10,
+            fontWeight: "bold",
+          }}
+        >
+          Categories
+        </Text>
         <View style={styles.IE}>
           <TouchableOpacity
             style={styles.choose}
@@ -87,7 +135,7 @@ export default function Dashboard({ navigation }) {
             </ImageBackground>
           </TouchableOpacity>
         </View>
-        <View style={styles.IE1}>
+        <View style={styles.IE}>
           <TouchableOpacity
             style={styles.choose}
             onPress={() => navigation.navigate("Tax")}
@@ -122,7 +170,6 @@ const styles = StyleSheet.create({
   },
   headerTxt: {
     marginTop: 45,
-    marginBottom: 10,
     fontSize: 30,
     fontWeight: "bold",
     fontFamily: "serif",
@@ -143,23 +190,15 @@ const styles = StyleSheet.create({
   },
   IE: {
     flexDirection: "row",
-    columnGap: 20,
-    rowGap: 20,
+    columnGap: 15,
     alignItems: "center",
-    marginTop: 30,
+    marginHorizontal: 30,
     height: "22%",
     width: "70%",
-    justifyContent: "center",
-  },
-  IE1: {
-    alignItems: "center",
-    marginTop: 10,
-    height: "20%",
-    width: "70%",
-    justifyContent: "center",
+    justifyContent: "flex-start",
   },
   choose: {
-    height: "90%",
+    height: "75%",
     width: "50%",
     alignItems: "center",
     alignSelf: "center",

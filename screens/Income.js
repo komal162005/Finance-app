@@ -18,13 +18,8 @@ import axios from "axios";
 import { ListItem } from "@rneui/themed";
 import Styles from "../Styles.style";
 import { Ionicons } from "@expo/vector-icons";
-
+import { FontAwesome } from "@expo/vector-icons";
 function Income({ navigation }) {
-  // const [newIncome, setNewIncome] = useState({
-  //   userId,
-  //   amount: "",
-  //   source: "",
-  // });
   const [amount, setAmount] = useState(null);
   const [source, setSource] = useState(null);
   const [refreshing, setRefershing] = useState(false);
@@ -108,6 +103,12 @@ function Income({ navigation }) {
         ) : null}
         <Text style={styles.txt}>Add your Income:</Text>
         <View style={styles.input}>
+          <FontAwesome
+            name="rupee"
+            size={18}
+            color="black"
+            style={{ marginLeft: 10, marginTop: 5 }}
+          />
           <TextInput
             style={{ marginLeft: 10 }}
             value={amount}
@@ -121,6 +122,11 @@ function Income({ navigation }) {
           />
         </View>
         <View style={styles.input}>
+          <Icon
+            name="source-branch"
+            size={18}
+            style={{ marginLeft: 10, marginTop: 5 }}
+          />
           <TextInput
             style={{ marginLeft: 10 }}
             placeholder="Source..."

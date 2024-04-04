@@ -14,7 +14,6 @@ import React, { useState, useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as ImagePicker from "expo-image-picker";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import Animated from "react-native-reanimated";
 import { MaterialIcons } from "@expo/vector-icons";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import { useTheme } from "react-native-paper";
@@ -22,45 +21,54 @@ import Feather from "react-native-vector-icons/Feather";
 import axios from "axios";
 import "react-native-get-random-values";
 import * as SecureStore from "expo-secure-store";
+import Icon from "@expo/vector-icons/AntDesign";
 
 export default function EditProfileScreen({ navigation }) {
-  const [image, setImage] = useState(null);
+  const [image, setImage] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
   const { colors } = useTheme();
   const [users, setData] = useState([]);
   const [errorMsg, setErrorMsg] = useState(null);
-  const [fdata, setFdata] = useState({
-    fname: "",
-    email: "",
-    address: "",
-    mobileNo: "",
-  });
+  const ImageUri = image;
+  const [email, setEmail] = useState("");
+  const [address, setAdd] = useState(null);
+  const [fname, setFname] = useState("");
+  const [mobileNo, setMobileNo] = useState(null);
 
-  useEffect(async () => {
-    const userId = await SecureStore.getItemAsync("userId")(
-      axios
-        .get(`http://192.168.0.103:8000/user/${userId}`)
-        .then((users) => setData(users.data))
-        .catch((err) => console.error(err)),
-      async () => {
-        const { status } =
-          await ImagePicker.requestMediaLibraryPermissionsAsync();
-        if (status !== "granted") {
-          console.error("Permission to access camera roll denied");
-        }
-
-        // Retrieve the stored profile picture URI from AsyncStorage
-        try {
-          const storedImage = await AsyncStorage.getItem("profilePicture");
-          if (storedImage) {
-            setImage(storedImage);
-          }
-        } catch (error) {
-          console.error("Error retrieving profile picture:", error.message);
-        }
+  useEffect(() => {
+    (async () => {
+      const { status } =
+        await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (status !== "granted") {
+        console.error("Permission to access camera roll denied");
       }
-    )();
+
+      // Retrieve the stored profile picture URI from AsyncStorage
+      try {
+        const userId = await SecureStore.getItemAsync("userId");
+        const storedImage = await AsyncStorage.getItem(
+          `selectedImage_${userId}`
+        );
+        if (storedImage) {
+          setImage(storedImage);
+        }
+      } catch (error) {
+        console.error("Error retrieving profile picture:", error.message);
+      }
+    })();
   }, []);
+
+  useEffect(() => {
+    fetchUser();
+  }, []);
+
+  const fetchUser = async () => {
+    const userId = await SecureStore.getItemAsync("userId");
+    axios
+      .get(`/user/${userId}`)
+      .then((users) => setData(users.data))
+      .catch((err) => console.error(err));
+  };
 
   const pickImage = async () => {
     // No permissions request is necessary for launching the image library
@@ -70,43 +78,66 @@ export default function EditProfileScreen({ navigation }) {
       aspect: [6, 6],
       quality: 1,
     });
-
     console.log(result);
-
     if (!result.canceled) {
+      const userId = await SecureStore.getItemAsync("userId");
       setImage(result.assets[0].uri);
       setModalVisible(!modalVisible);
+      // Save the image URI to AsyncStorage
+      await AsyncStorage.setItem(`selectedImage_${userId}`, result.uri);
+      console.log("Image URI saved to AsyncStorage:", result.uri);
     }
+    console.log(image);
+    console.log(ImageUri);
   };
 
   const saveData = async () => {
-    await AsyncStorage.setItem("profilePicture", image);
-    fetch("http://192.168.0.103:8000/update", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(fdata),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.error) {
-          setErrorMsg(data.error);
-        } else {
-          ToastAndroid.show(
-            "your inforamtion updated successfully",
-            ToastAndroid.LONG
-          );
-          navigation.navigate("Profile");
-        }
-      });
+    const userId = await SecureStore.getItemAsync("userId");
+    const url = await SecureStore.getItemAsync("URL");
+    console.log(url);
+    const Data = {
+      userId,
+      fname: fname,
+      mobileNo: mobileNo,
+      email: email,
+      address: address,
+    };
+    if (mobileNo.length !== 10) {
+      setErrorMsg("Please enter valid mobile number!!");
+      return;
+    } else if (!fname || !mobileNo || !address) {
+      setErrorMsg("Please all fields!!");
+      return;
+    } else {
+      const localhost = url + "/update";
+      console.log(localhost);
+      fetch(`${localhost}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(Data),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.error) {
+            setErrorMsg(data.error);
+          } else {
+            ToastAndroid.show(
+              "your inforamtion updated successfully",
+              ToastAndroid.LONG
+            );
+            navigation.navigate("Profile");
+          }
+        });
+    }
   };
 
   return (
     <View style={styles.container}>
       <View style={{ alignItems: "center", marginTop: 20 }}>
         <TouchableOpacity>
-          <Image source={{ uri: image }} style={styles.imagep} />
+          {image && <Image source={{ uri: image }} style={styles.imagep} />}
           <TouchableOpacity
             style={styles.editBtn}
             onPress={() => setModalVisible(true)}
@@ -158,10 +189,12 @@ export default function EditProfileScreen({ navigation }) {
       <View style={styles.action}>
         <FontAwesome name="user-o" color={colors.text} size={20} />
         <TextInput
+          value={fname}
           placeholder="Full Name"
           placeholderTextColor="#666666"
           autoCorrect={false}
-          onChangeText={(text) => setFdata({ ...fdata, fname: text })}
+          onPressIn={() => setErrorMsg(null)}
+          onChangeText={(text) => setFname(text)}
           style={[
             styles.textInput,
             {
@@ -173,11 +206,13 @@ export default function EditProfileScreen({ navigation }) {
       <View style={styles.action}>
         <Feather name="phone" color={colors.text} size={20} />
         <TextInput
+          value={mobileNo}
           placeholder="Phone"
           placeholderTextColor="#666666"
           keyboardType="number-pad"
+          onPressIn={() => setErrorMsg(null)}
           autoCorrect={false}
-          onChangeText={(text) => setFdata({ ...fdata, mobileNo: text })}
+          onChangeText={(number) => setMobileNo(number)}
           style={[
             styles.textInput,
             {
@@ -188,19 +223,21 @@ export default function EditProfileScreen({ navigation }) {
       </View>
       <View style={styles.action}>
         <FontAwesome name="envelope-o" color={colors.text} size={20} />
-        <TextInput
-          placeholder="Email"
-          placeholderTextColor="#666666"
-          keyboardType="email-address"
-          autoCorrect={false}
-          onChangeText={(text) => setFdata({ ...fdata, email: text })}
-          style={[
-            styles.textInput,
-            {
-              color: colors.text,
-            },
-          ]}
-        />
+        {users.map((item) => (
+          <View key={item._id}>
+            <Text
+              style={[
+                styles.textInput,
+                {
+                  color: colors.text,
+                  fontSize: 15,
+                },
+              ]}
+            >
+              {item.email}
+            </Text>
+          </View>
+        ))}
       </View>
       <View style={styles.action}>
         <MaterialCommunityIcons
@@ -209,10 +246,12 @@ export default function EditProfileScreen({ navigation }) {
           size={20}
         />
         <TextInput
+          value={address}
           placeholder="Address"
           placeholderTextColor="#666666"
           autoCorrect={false}
-          onChangeText={(text) => setFdata({ ...fdata, address: text })}
+          onPressIn={() => setErrorMsg(null)}
+          onChangeText={(text) => setAdd(text)}
           style={[
             styles.textInput,
             {
@@ -221,6 +260,12 @@ export default function EditProfileScreen({ navigation }) {
           ]}
         />
       </View>
+      {errorMsg ? (
+        <View style={{ flexDirection: "row", marginBottom: 10 }}>
+          <Icon style={styles.err} name="warning" size={15} />
+          <Text style={styles.err}>{errorMsg}</Text>
+        </View>
+      ) : null}
       <TouchableOpacity style={styles.commandButton} onPress={() => saveData()}>
         <Text style={styles.panelButtonTitle}>Submit</Text>
       </TouchableOpacity>
@@ -228,6 +273,13 @@ export default function EditProfileScreen({ navigation }) {
   );
 }
 const styles = StyleSheet.create({
+  err: {
+    color: "red",
+    alignSelf: "center",
+    marginTop: 10,
+    fontSize: 20,
+    padding: 10,
+  },
   container: {
     flex: 1,
     backgroundColor: "white",

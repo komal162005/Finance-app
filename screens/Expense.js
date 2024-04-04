@@ -17,6 +17,8 @@ import { ListItem } from "@rneui/themed";
 import axios from "axios";
 import { Ionicons } from "@expo/vector-icons";
 import * as SecureStore from "expo-secure-store";
+import { FontAwesome } from "@expo/vector-icons";
+import { MaterialIcons } from "@expo/vector-icons";
 
 function Expense({ navigation }) {
   const [refreshing, setRefershing] = useState(false);
@@ -24,6 +26,7 @@ function Expense({ navigation }) {
   const [amount, setAmount] = useState(null);
   const [category, setCategory] = useState(null);
   const [expenses, setExpenses] = useState([]);
+
   useEffect(() => {
     // Fetch all income entries when the component mounts
     fetchExpense();
@@ -98,6 +101,12 @@ function Expense({ navigation }) {
         ) : null}
         <Text style={styles.txt}>Add your Expense:</Text>
         <View style={Styles.input}>
+          <FontAwesome
+            name="rupee"
+            size={18}
+            color="black"
+            style={{ marginLeft: 10, marginTop: 5 }}
+          />
           <TextInput
             style={{ marginLeft: 10 }}
             placeholder="enter Expense..."
@@ -108,6 +117,7 @@ function Expense({ navigation }) {
           />
         </View>
         <View style={Styles.input}>
+          <MaterialIcons name="category" size={24} color="black" />
           <TextInput
             style={{ marginLeft: 10 }}
             placeholder="Category..."

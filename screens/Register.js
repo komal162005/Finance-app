@@ -226,9 +226,10 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   title: {
+  marginTop:10,
     fontSize: 30,
     fontWeight: "bold",
-    paddingBottom: 20,
+    paddingBottom: 10,
     fontFamily: "sans-serif-condensed",
   },
   wrapper: {

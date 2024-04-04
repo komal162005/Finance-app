@@ -1,4 +1,3 @@
-import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -19,7 +18,6 @@ import Report from "./screens/Report";
 import Profile from "./otherScreens/Profile";
 import FPass from "./otherScreens/FPass";
 import FPassCom from "./otherScreens/ResetPassCom";
-import { useRoute } from "@react-navigation/native";
 import Notification from "./screens/Notification.android";
 import Icons from "@expo/vector-icons/FontAwesome5";
 import Tax from "./screens/TaxR";
@@ -29,12 +27,10 @@ import ImportExport from "./otherScreens/ImportExport";
 import { createStackNavigator } from "@react-navigation/stack";
 import { useTheme } from "react-native-paper";
 import axios from "axios";
-import * as SecureStore from "expo-secure-store";
-axios.defaults.baseURL = "http://192.168.0.103:8000";
+axios.defaults.baseURL = "http://192.168.112.179:8000";
 
 const stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
-const Drawer = createDrawerNavigator();
 const ProfileStack = createStackNavigator();
 
 function PrfileStackScreen({ navigation }) {

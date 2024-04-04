@@ -6,6 +6,7 @@ import {
   View,
   Button,
   Image,
+  ImageBackground,
 } from "react-native";
 import { Avatar, Title, Caption, TouchableRipple } from "react-native-paper";
 import Icon from "@expo/vector-icons/MaterialCommunityIcons";
@@ -14,11 +15,8 @@ import { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as ImagePicker from "expo-image-picker";
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import { MyContext } from "../screens/Login";
 
 export default function Profile({ navigation }) {
-  // const [imageUri, setImageUri] = useState(null);
   const [users, setData] = useState([]);
   const [incomeEntries, setIncomeEntries] = useState([]);
   const [expenseCount, setExpenseCount] = useState(0);
@@ -31,15 +29,16 @@ export default function Profile({ navigation }) {
       if (status !== "granted") {
         console.error("Permission to access camera roll denied");
       }
-
-      // Retrieve the stored profile picture URI from AsyncStorage
       try {
-        const storedImage = await AsyncStorage.getItem("profilePicture");
+        const userId = await SecureStore.getItemAsync("userId");
+        const storedImage = await AsyncStorage.getItem(
+          `selectedImage_${userId}`
+        );
         if (storedImage) {
           setImage(storedImage);
         }
-      } catch (error) {
-        console.error("Error retrieving profile picture:", error.message);
+      } catch (err) {
+        console.log(err);
       }
     })();
   }, []);
@@ -59,10 +58,11 @@ export default function Profile({ navigation }) {
   };
   const fetchUser = async () => {
     const userId = await SecureStore.getItemAsync("userId");
-    axios
+    const res = axios
       .get(`/user/${userId}`)
       .then((users) => setData(users.data))
       .catch((err) => console.err(err));
+    // setImageUri(res.data.image);
   };
   const calculateTotal = (data, type) => {
     return data.reduce((total, item) => total + item.amount, 0);
@@ -77,29 +77,29 @@ export default function Profile({ navigation }) {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.userInfo}>
+        <View style={{ alignContent: "center", alignItems: "center" }}>
+          {image && <Image source={{ uri: image }} style={styles.imagep} />}
+        </View>
         <View
           style={{
-            alignItems: "flex-start",
+            alignItems: "center",
             marginTop: 10,
-            flexDirection: "row",
           }}
         >
-          <TouchableOpacity>
-            <Image source={{ uri: image }} style={styles.imagep} />
-          </TouchableOpacity>
-          <View style={{ marginLeft: 40 }}>
+          <View style={{ alignItems: "center" }}>
             <Title
               style={[
                 styles.title,
                 {
-                  marginTop: 30,
+                  marginTop: 10,
                   marginBottom: 5,
+                  alignItems: "center",
                 },
               ]}
             >
               {users.map((item) => (
                 <View key={item._id} style={styles.item}>
-                  <Text style={{ fontSize: 20 }}>{item.fname}</Text>
+                  <Text style={{ fontSize: 30 }}>{item.fname}</Text>
                 </View>
               ))}
             </Title>
@@ -123,6 +123,16 @@ export default function Profile({ navigation }) {
             <View key={item._id} style={styles.item}>
               <Text style={{ color: "black", marginLeft: 20 }}>
                 {item.email}
+              </Text>
+            </View>
+          ))}
+        </View>
+        <View style={styles.row}>
+          <Icon name="phone" color="black" size={20} />
+          {users.map((item) => (
+            <View key={item._id} style={styles.item}>
+              <Text style={{ color: "black", marginLeft: 20 }}>
+                {item.mobileNo}
               </Text>
             </View>
           ))}
@@ -199,10 +209,11 @@ const styles = StyleSheet.create({
   },
   imagep: {
     borderRadius: 75,
-    width: 100,
-    height: 100,
-    borderColor: "pink",
+    width: 170,
+    height: 170,
+    borderColor: "grey",
     borderWidth: 0,
+    borderWidth: 3,
   },
   editBtn: {
     backgroundColor: "white",

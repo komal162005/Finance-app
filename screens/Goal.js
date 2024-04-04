@@ -17,6 +17,8 @@ import Icon from "@expo/vector-icons/MaterialCommunityIcons";
 import axios from "axios";
 import { ListItem } from "@rneui/themed";
 import { Ionicons } from "@expo/vector-icons";
+import { FontAwesome } from "@expo/vector-icons";
+import { MaterialIcons } from "@expo/vector-icons";
 
 function Goal({ navigation }) {
   const [amount, setAmount] = useState(null);
@@ -106,6 +108,12 @@ function Goal({ navigation }) {
         ) : null}
         <Text style={styles.txt}>Set your Goal:</Text>
         <View style={styles.input}>
+          <FontAwesome
+            name="rupee"
+            size={18}
+            color="black"
+            style={{ marginLeft: 10, marginTop: 5 }}
+          />
           <TextInput
             style={{ marginLeft: 10 }}
             placeholder="enter goal amount..."
@@ -116,6 +124,7 @@ function Goal({ navigation }) {
           />
         </View>
         <View style={styles.input}>
+          <MaterialIcons name="short-text" size={24} color="black" />
           <TextInput
             style={{ marginLeft: 10 }}
             placeholder="Description..."
