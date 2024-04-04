@@ -158,9 +158,7 @@ function Login({ navigation }) {
             }}
           >
             <Text>If new user click on </Text>
-            <TouchableOpacity
-              onPress={() => navigation.navigate("Register", { email })}
-            >
+            <TouchableOpacity onPress={() => navigation.navigate("Register")}>
               <Text style={{ color: "blue", textDecorationLine: "underline" }}>
                 Register
               </Text>

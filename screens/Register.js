@@ -1,11 +1,10 @@
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import Icon from "@expo/vector-icons/AntDesign";
 import Icons from "@expo/vector-icons/FontAwesome";
 import Icon1 from "@expo/vector-icons/MaterialCommunityIcons";
 import "react-native-get-random-values";
 import { v4 as uuidv4 } from "uuid";
 import {
-  Button,
   Text,
   TextInput,
   TouchableOpacity,
@@ -15,8 +14,7 @@ import {
   ToastAndroid,
 } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
-import { useRoute } from "@react-navigation/native";
-const Register = async ({ naviagtion }) => {
+const Register = ({ navigation }) => {
   const userId = uuidv4();
   const [fdata, setFdata] = useState({
     userId: userId,
@@ -60,7 +58,7 @@ const Register = async ({ naviagtion }) => {
                 "user registered successfully",
                 ToastAndroid.LONG
               );
-              naviagtion.navigate("Login");
+              navigation.navigate("Login");
             }
           });
         console.log(fdata);
@@ -181,7 +179,7 @@ const Register = async ({ naviagtion }) => {
             <Text>Already have an account? </Text>
             <TouchableOpacity
               style={styles.button}
-              onPress={() => navigation.navigate("Login", { userId })}
+              onPress={() => navigation.navigate("Login")}
             >
               <Text style={styles.link}>Login</Text>
             </TouchableOpacity>

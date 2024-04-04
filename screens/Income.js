@@ -41,7 +41,6 @@ function Income({ navigation }) {
       const userId = await SecureStore.getItemAsync("userId");
       // const token = await SecureStore.getItemAsync("token");
       const response = await axios.get(`/income/${userId}`);
-      const data = response.json();
       setIncomeEntries(response.data);
       setRefershing(false);
     } catch (error) {
