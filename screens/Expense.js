@@ -60,7 +60,7 @@ function Expense({ navigation }) {
     if (!amount || !category) {
       setErrorMsg("Please fill the fields!");
     } else {
-      fetch("/expense", {
+      fetch("https://finance-app-757u.onrender.com/expense", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

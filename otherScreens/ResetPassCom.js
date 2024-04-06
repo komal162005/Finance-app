@@ -74,12 +74,12 @@ function ResetPassCom({ navigation }) {
           alignSelf: "center",
           fontSize: 25,
           fontFamily: "serif",
-          marginBottom: 20,
+          marginBottom: 5,
         }}
       >
         Reset Password
       </Text>
-      <Text style={{ margin: 25 }}>
+      <Text style={{ margin: 15 }}>
         Your reset password Verification code is send on{" "}
         <Text style={{ color: "blue" }}>{email}</Text>
       </Text>
@@ -138,7 +138,7 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   in: {
-    margin: 25,
+    margin: 15,
     padding: 5,
     marginBottom: 10,
     borderWidth: 1,

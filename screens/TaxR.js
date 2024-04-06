@@ -60,7 +60,7 @@ export default function TaxR({ navigation }) {
       setErrorMsg("Please fill all the fileds!");
       return;
     } else {
-      fetch("/taxRecord", {
+      fetch("https://finance-app-757u.onrender.com/taxRecord", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

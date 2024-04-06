@@ -61,7 +61,7 @@ function Income({ navigation }) {
     if (!amount || !source) {
       setErrorMsg("Please fill all fields!");
     } else {
-      fetch("/income", {
+      fetch("https://finance-app-757u.onrender.com/income", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

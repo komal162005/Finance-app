@@ -32,7 +32,7 @@ export default function ImportExport({ navigation }) {
   const [value, setValue] = useState(null);
   const exportDataToCsv = async () => {
     const userId = await SecureStore.getItemAsync("userId");
-    const url = await SecureStore.getItemAsync("URL");
+    const url = await SecureStore.getItemAsync("newURL");
     console.log(url);
     if (value == "1") {
       const localhost = url + `/income/${userId}`;
@@ -47,7 +47,7 @@ export default function ImportExport({ navigation }) {
         FileSystem.documentDirectory + fileName
       );
       console.log(result);
-      save(result.uri, fileName, result.headers["Content-Type"]);
+      save(result.uri, fileName);
       console.log("You selected income to export");
     } else if (value == "2") {
       const response = await axios.get(`/expense/${userId}`);
@@ -99,11 +99,11 @@ export default function ImportExport({ navigation }) {
         FileSystem.documentDirectory + fileName
       );
       console.log(result);
-      save(result.uri, fileName, result.headers["Content-Type"]);
+      save(result.uri, fileName);
       console.log("You selected Tax record to export");
     }
   };
-  const save = async (uri, fileName, mimetype) => {
+  const save = async (uri, fileName) => {
     if (Platform.OS === "android") {
       const permissions =
         await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync();
@@ -113,8 +113,7 @@ export default function ImportExport({ navigation }) {
         });
         await FileSystem.StorageAccessFramework.createFileAsync(
           permissions.directoryUri,
-          fileName,
-          mimetype
+          fileName
         )
           .then(async (uri) => {
             await FileSystem.writeAsStringAsync(uri, base64, {

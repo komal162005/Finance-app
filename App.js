@@ -27,7 +27,7 @@ import ImportExport from "./otherScreens/ImportExport";
 import { createStackNavigator } from "@react-navigation/stack";
 import { useTheme } from "react-native-paper";
 import axios from "axios";
-axios.defaults.baseURL = "http://192.168.112.179:8000";
+axios.defaults.baseURL = "https://finance-app-757u.onrender.com";
 
 const stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();

@@ -40,7 +40,7 @@ export default function EditProfileScreen({ navigation }) {
       const { status } =
         await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (status !== "granted") {
-        console.error("Permission to access camera roll denied");
+        console.log("Permission to access camera roll denied");
       }
 
       // Retrieve the stored profile picture URI from AsyncStorage
@@ -93,7 +93,7 @@ export default function EditProfileScreen({ navigation }) {
 
   const saveData = async () => {
     const userId = await SecureStore.getItemAsync("userId");
-    const url = await SecureStore.getItemAsync("URL");
+    const url = await SecureStore.getItemAsync("newURL");
     console.log(url);
     const Data = {
       userId,
@@ -102,34 +102,54 @@ export default function EditProfileScreen({ navigation }) {
       email: email,
       address: address,
     };
-    if (mobileNo.length !== 10) {
+    if (mobileNo.length !== 10 || mobileNo === "") {
       setErrorMsg("Please enter valid mobile number!!");
       return;
-    } else if (!fname || !mobileNo || !address) {
-      setErrorMsg("Please all fields!!");
+    } else if (fname === "" || address === "") {
+      setErrorMsg("Please enter all fields!!");
       return;
     } else {
-      const localhost = url + "/update";
-      console.log(localhost);
-      fetch(`${localhost}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(Data),
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.error) {
-            setErrorMsg(data.error);
-          } else {
-            ToastAndroid.show(
-              "your inforamtion updated successfully",
-              ToastAndroid.LONG
-            );
-            navigation.navigate("Profile");
+      try {
+        const response = await axios.post(
+          `https://finance-app-757u.onrender.com/update`,
+          Data,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(Data),
           }
-        });
+        );
+        ToastAndroid.show(
+          "your inforamtion updated successfully",
+          ToastAndroid.LONG
+        );
+        navigation.navigate("Profile1");
+      } catch (error) {
+        setErrorMsg("error occured Please check email and password!");
+      }
+      // const localhost = url + "/update";
+      // console.log(localhost);
+      // fetch(`${localhost}`, {
+      //   method: "POST",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //   },
+      //   body: JSON.stringify(Data),
+      // })
+      //   .then((res) => res.json())
+      //   .then((data) => {
+      //     if (data.error) {
+      //       setErrorMsg(data.error);
+      //     } else {
+      //       ToastAndroid.show(
+      //         "your inforamtion updated successfully",
+      //         ToastAndroid.LONG
+      //       );
+      //       navigation.navigate("Profile");
+      //     }
+      //   });
     }
   };
 

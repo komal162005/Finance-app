@@ -42,7 +42,7 @@ const Register = ({ navigation }) => {
         setErrorMsg("Please enter valid email!");
         return;
       } else {
-        fetch("http://192.168.0.103:8000/signup", {
+        fetch("https://finance-app-757u.onrender.com/signup", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -226,7 +226,7 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   title: {
-  marginTop:10,
+    marginTop: 10,
     fontSize: 30,
     fontWeight: "bold",
     paddingBottom: 10,

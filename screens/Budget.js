@@ -63,7 +63,7 @@ function Budget({ navigation }) {
     if (!amount || !type) {
       setErrorMsg("Please fill all fields!");
     } else {
-      fetch("/budget", {
+      fetch("https://finance-app-757u.onrender.com/budget", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

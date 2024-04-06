@@ -60,7 +60,7 @@ function Goal({ navigation }) {
     if (!amount || !description) {
       setErrorMsg("Please fill the field!");
     } else {
-      fetch("/goal", {
+      fetch("https://finance-app-757u.onrender.com/goal", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

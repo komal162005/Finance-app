@@ -38,7 +38,7 @@ function Login({ navigation }) {
       setErrorMsg("*Please fill all fields!");
       return;
     } else if (!email.includes("@")) {
-      setErrorMsg("Please Enter valid character!");
+      setErrorMsg("Please Enter valid email!");
       return;
     } else if (email.includes(" ") || email.includes(" ")) {
       setErrorMsg("Space between character not allowed!");
@@ -46,20 +46,22 @@ function Login({ navigation }) {
     } else {
       try {
         // function connect to backend with api.
-        const url = process.env.localhost_url;
-        const response = await axios.post(`/signin`, Data, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(Data),
-        });
+        const response = await axios.post(
+          `https://finance-app-757u.onrender.com/signin`,
+          Data,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(Data),
+          }
+        );
 
         const { userId } = await response.data;
         ToastAndroid.show("Login successfully..", ToastAndroid.LONG);
         navigation.navigate("Dash");
         await SecureStore.setItemAsync("userId", userId);
-        await SecureStore.setItemAsync("URL", "http://192.168.0.102:8000");
         console.log(Data);
         console.log(JSON.stringify(userId));
       } catch (error) {

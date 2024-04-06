@@ -22,8 +22,12 @@ export default function Dashboard({ navigation }) {
 
   const fetchUser = async () => {
     const userId = await SecureStore.getItemAsync("userId");
+    await SecureStore.setItemAsync(
+      "newURL",
+      "https://finance-app-757u.onrender.com"
+    );
     axios
-      .get(`/user/${userId}`)
+      .get(`https://finance-app-757u.onrender.com/user/${userId}`)
       .then((users) => setData(users.data))
       .catch((err) => console.err(err));
   };

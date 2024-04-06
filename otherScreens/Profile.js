@@ -27,7 +27,7 @@ export default function Profile({ navigation }) {
       const { status } =
         await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (status !== "granted") {
-        console.error("Permission to access camera roll denied");
+        console.log("Permission to access camera roll denied");
       }
       try {
         const userId = await SecureStore.getItemAsync("userId");
@@ -78,6 +78,7 @@ export default function Profile({ navigation }) {
     <SafeAreaView style={styles.container}>
       <View style={styles.userInfo}>
         <View style={{ alignContent: "center", alignItems: "center" }}>
+
           {image && <Image source={{ uri: image }} style={styles.imagep} />}
         </View>
         <View
